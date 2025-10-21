@@ -108,6 +108,12 @@
                                                         {{ __('إلغاء الحجز') }}
                                                     </button>
                                                 </form>
+                                                @if (!$reservation->is_paid)
+                                                    <a href="{{ route('payment.checkout', $reservation) }}"
+                                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-bold">
+                                                        ادفع الآن
+                                                    </a>
+                                                @endif
                                             @else
                                                 <span class="text-gray-400 text-xs">{{ __('لا يوجد إجراء') }}</span>
                                             @endif
