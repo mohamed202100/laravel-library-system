@@ -6,10 +6,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Auth\GitHubController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('auth/github', [GitHubController::class, 'redirectToGitHub'])->name('github.login');
+Route::get('auth/github/callback', [GitHubController::class, 'handleGitHubCallback']);
+
 
 
 Route::get('/dashboard', [BookController::class, 'dashIndex'])

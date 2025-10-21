@@ -9,7 +9,6 @@
     <div class="py-10 bg-gradient-to-b from-gray-50 to-white min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- 🔹 قسم النبذة والترحيب --}}
             <div
                 class="relative mb-10 bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-400 text-white rounded-2xl shadow-xl overflow-hidden">
                 <div
