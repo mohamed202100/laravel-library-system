@@ -2,63 +2,81 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Book;
+use App\Models\Author;
+use App\Http\Requests\Admin\BookStoreRequest;
+use App\Http\Requests\Admin\BookUpdateRequest;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $books = Book::with('author')->paginate(10);
+
+        return view('admin.books.index', compact('books'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $authors = Author::select('id', 'name')->orderBy('name')->get();
+
+        return view('admin.books.create', compact('authors'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(BookStoreRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
+
+        $data['available_copies'] = $data['total_copies'];
+        Book::create($data);
+
+        return redirect()->route('admin.books.index')
+            ->with('success', 'تم إضافة الكتاب والمخزون بنجاح.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Book $book)
     {
-        //
+        $authors = Author::select('id', 'name')->orderBy('name')->get();
+
+        return view('admin.books.edit', compact('book', 'authors'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(BookUpdateRequest $request, Book $book)
     {
-        //
+        $data = $request->validated();
+
+        if ($request->hasFile('cover_image')) {
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
+
+        $book->update($data);
+
+        return redirect()->route('admin.books.index')
+            ->with('success', 'تم تحديث بيانات الكتاب بنجاح.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Book $book)
     {
-        //
-    }
+        try {
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            $book->delete();
+
+            return redirect()->route('admin.books.index')
+                ->with('success', 'تم حذف الكتاب من المخزون بنجاح.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.books.index')
+                ->with('error', 'فشل حذف الكتاب. تأكد من عدم وجود حجوزات نشطة مرتبطة به.');
+        }
     }
 }
