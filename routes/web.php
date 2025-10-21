@@ -23,7 +23,7 @@ Route::get('/dashboard', [BookController::class, 'dashIndex'])
     ->name('dashboard');
 
 
-Route::middleware(['auth', 'admin'])
+Route::middleware(['auth', 'admin', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -42,7 +42,7 @@ Route::middleware(['auth', 'admin'])
 
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
     Route::post('books/{book}/reserve', [ReservationController::class, 'store'])->name('books.reserve');
     Route::get('my-reservations', [ReservationController::class, 'myReservations'])->name('reservations.my');
