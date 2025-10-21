@@ -1,35 +1,32 @@
+<?php
+$isAdmin = Auth::check() && Auth::user()->is_admin;
+?>
+
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100" dir="rtl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    {{-- تعديل رابط الشعار ليوجه للوحة القارئ --}}
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
-                {{-- تعديل الاتجاه والروابط --}}
                 <div class="hidden space-x-8 sm:-my-px sm:me-10 sm:flex">
 
-                    {{-- رابط تصفح الكتب (لوحة القارئ) --}}
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('تصفح الكتب') }}
+                        {{ __('تصفح المكتبة') }}
                     </x-nav-link>
 
-                    {{-- روابط المدير (تظهر فقط إذا كان is_admin صحيحاً) --}}
-                    @if (Auth::user()->is_admin)
-                        {{-- لوحة المدير الرئيسية --}}
+                    @if ($isAdmin)
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('لوحة المدير') }}
                         </x-nav-link>
 
-                        {{-- إدارة الكتب --}}
                         <x-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.index')">
                             {{ __('إدارة الكتب') }}
                         </x-nav-link>
 
-                        {{-- إدارة المؤلفين --}}
                         <x-nav-link :href="route('admin.authors.index')" :active="request()->routeIs('admin.authors.index')">
                             {{ __('إدارة المؤلفين') }}
                         </x-nav-link>
@@ -37,9 +34,9 @@
                 </div>
             </div>
 
-            {{-- تعديل الاتجاه للربط مع RTL --}}
+
             <div class="hidden sm:flex sm:items-center sm:me-6">
-                <x-dropdown align="left" width="48"> {{-- تم تغيير align="right" إلى "left" --}}
+                <x-dropdown align="left" width="48">
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -61,8 +58,7 @@
                             {{ __('الملف الشخصي') }}
                         </x-dropdown-link>
 
-                        {{-- رابط المدير في القائمة المنسدلة --}}
-                        @if (Auth::user()->is_admin)
+                        @if ($isAdmin)
                             <x-dropdown-link :href="route('admin.dashboard')">
                                 {{ __('لوحة المدير') }}
                             </x-dropdown-link>
@@ -80,6 +76,7 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+
 
             <div class="-ms-2 flex items-center sm:hidden">
                 <button @click="open = ! open"
@@ -99,12 +96,18 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden" dir="rtl">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('تصفح الكتب') }}
+                {{ __('تصفح المكتبة') }}
             </x-responsive-nav-link>
 
-            @if (Auth::user()->is_admin)
+            @if ($isAdmin)
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('لوحة المدير') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.index')">
+                    {{ __('إدارة الكتب') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.authors.index')" :active="request()->routeIs('admin.authors.index')">
+                    {{ __('إدارة المؤلفين') }}
                 </x-responsive-nav-link>
             @endif
         </div>

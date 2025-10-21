@@ -30,8 +30,9 @@
                         <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500 shadow-md">
                             <h4 class="text-lg font-semibold mb-2">إدارة المؤلفين</h4>
                             <p class="text-gray-600 mb-4">إدارة بيانات المؤلفين.</p>
-                            <a href="#" class="text-green-600 hover:text-green-800 font-medium">
-                                الانتقال » (سنفعلها لاحقاً)
+                            <a href="{{ route('admin.authors.index') }}"
+                                class="text-green-600 hover:text-green-800 font-medium">
+                                الانتقال »
                             </a>
                         </div>
 
@@ -39,8 +40,9 @@
                         <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500 shadow-md">
                             <h4 class="text-lg font-semibold mb-2">متابعة الحجوزات</h4>
                             <p class="text-gray-600 mb-4">عرض سجلات الإعارة وحالات الإرجاع.</p>
-                            <a href="#" class="text-yellow-600 hover:text-yellow-800 font-medium">
-                                الانتقال » (سنفعلها لاحقاً)
+                            <a href="{{ route('admin.reservations.index') }}"
+                                class="text-yellow-600 hover:text-yellow-800 font-medium">
+                                الانتقال »
                             </a>
                         </div>
                     </div>

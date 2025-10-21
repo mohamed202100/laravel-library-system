@@ -12,7 +12,6 @@
                 <form method="POST" action="{{ route('admin.authors.store') }}">
                     @csrf
 
-                    {{-- حقل الاسم --}}
                     <div class="mb-4">
                         <x-input-label for="name" :value="__('اسم المؤلف')" />
                         <x-text-input id="name" name="name" type="text" class="mt-1 block w-full"
@@ -20,7 +19,6 @@
                         <x-input-error class="mt-2" :messages="$errors->get('name')" />
                     </div>
 
-                    {{-- حقل السيرة الذاتية --}}
                     <div class="mb-6">
                         <x-input-label for="bio" :value="__('السيرة الذاتية (اختياري)')" />
                         <textarea id="bio" name="bio" rows="4"
@@ -28,7 +26,12 @@
                         <x-input-error class="mt-2" :messages="$errors->get('bio')" />
                     </div>
 
-                    <div class="flex justify-end">
+                    <div class="flex justify-end space-x-3 space-x-reverse">
+                        <a href="{{ route('admin.authors.index') }}"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-150 flex items-center">
+                            {{ __('إلغاء والعودة') }}
+                        </a>
+
                         <x-primary-button>
                             {{ __('حفظ المؤلف') }}
                         </x-primary-button>

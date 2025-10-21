@@ -2,63 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\AuthorStoreRequest;
+use App\Http\Requests\Admin\AuthorUpdateRequest;
 
 class AuthorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $authors = Author::orderBy('name')->paginate(10);
+
+        return view('admin.authors.index', compact('authors'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.authors.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(AuthorStoreRequest $request)
     {
-        //
+        Author::create($request->validated());
+
+        return redirect()->route('admin.authors.index')
+            ->with('success', 'تم إضافة المؤلف بنجاح.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Author $author)
     {
-        //
+        return view('admin.authors.edit', compact('author'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(AuthorUpdateRequest $request, Author $author)
     {
-        //
+        $author->update($request->validated());
+
+        return redirect()->route('admin.authors.index')
+            ->with('success', 'تم تحديث بيانات المؤلف بنجاح.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Author $author)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        try {
+            $author->delete();
+            return redirect()->route('admin.authors.index')->with('success', 'تم حذف المؤلف بنجاح.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->route('admin.authors.index')
+                ->with('error', 'لا يمكن حذف هذا المؤلف لأنه مرتبط بكتاب واحد على الأقل. يرجى حذف كتبه أولاً.');
+        }
     }
 }
