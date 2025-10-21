@@ -1,3 +1,7 @@
+<?php
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
 
@@ -6,12 +10,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LibraryEase - نظام إدارة المكتبة الافتراضية</title>
 
-    <!-- Scripts & Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Scripts & Styles -->@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Font Awesome for Icons (Required for icons used in Features) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+
         body {
             font-family: 'Tajawal', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .hero-bg {
+            /* تصميم الخلفية الهادئ من التصميم المدمج */
+            background: linear-gradient(to bottom right, #1e3a8a, #3b82f6);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+        }
+
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -19,22 +52,23 @@
 <body class="antialiased bg-gray-50">
     <div class="relative min-h-screen">
 
-        <header class="p-6 bg-white border-b border-gray-200 shadow-lg">
+        <!-- Header -->
+        <header class="p-6 bg-white border-b border-gray-200 shadow-md fixed w-full top-0 z-50">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <div class="text-2xl font-bold text-blue-600">LibraryEase</div>
+                <div class="text-2xl font-extrabold text-blue-700">📚 LibraryEase</div>
 
                 <nav class="flex items-center space-x-4 space-x-reverse">
                     @auth
-                        <span class="text-gray-700 font-medium">مرحباً، {{ Auth::user()->name }}</span>
+                        <span class="text-gray-700 font-medium hidden sm:inline">مرحباً، {{ Auth::user()->name }}</span>
 
                         @if (Auth::user()->is_admin)
                             <a href="{{ route('admin.dashboard') }}"
-                                class="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg font-semibold transition duration-150 shadow-md">
+                                class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold transition duration-150 shadow-md">
                                 لوحة المدير
                             </a>
                         @endif
 
-                        <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-blue-600 font-semibold">
+                        <a href="{{ route('dashboard') }}" class="text-blue-700 hover:text-blue-900 font-semibold">
                             تصفح المكتبة
                         </a>
 
@@ -46,10 +80,8 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-semibold">
-                            تسجيل الدخول
-                        </a>
-
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-semibold">تسجيل
+                            الدخول</a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}"
                                 class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition duration-150 shadow-md">
@@ -61,35 +93,122 @@
             </div>
         </header>
 
-        <main class="py-20 text-center">
-            <div class="max-w-4xl mx-auto px-4">
-                <h1 class="text-6xl font-extrabold text-gray-900 mb-6">
-                    مستقبلك يبدأ من هنا
-                </h1>
-                <h2 class="text-7xl font-extrabold text-blue-600 mb-8">
-                    LibraryEase
-                </h2>
-                <p class="text-xl text-gray-700 mb-10 leading-relaxed">
-                    نظام إدارة المكتبة الافتراضية، يجمع بين سهولة حجز الكتب للقارئ وكفاءة إدارة المخزون للمدير.
-                </p>
-
-                @guest
-                    <a href="{{ route('register') }}"
-                        class="inline-block bg-green-600 hover:bg-green-700 text-white text-2xl font-bold px-10 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition duration-300">
-                        ابدأ رحلة القراءة الآن
-                    </a>
-                @endguest
-
-                @auth
-                    <p class="text-xl text-gray-700">
-                        للانتقال إلى لوحة التحكم الخاصة بك، اضغط على زر
-                        <a href="{{ route('dashboard') }}" class="text-blue-600 font-bold hover:text-blue-800">تصفح
-                            المكتبة</a> في شريط التنقل.
+        <main class="pt-16">
+            <!-- Hero Section -->
+            <section class="hero-bg text-center py-32">
+                <div class="max-w-4xl mx-auto px-4 relative z-10">
+                    <h1 class="text-6xl sm:text-7xl font-extrabold mb-6 text-shadow">مرحباً بك في <span
+                            class="text-yellow-300">LibraryEase</span></h1>
+                    <p class="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-8">
+                        منصة ذكية لإدارة المكتبات وحجز الكتب بسهولة — اجمع بين متعة القراءة وسهولة الوصول إلى المعرفة.
                     </p>
-                @endauth
 
-            </div>
+                    @guest
+                        <a href="{{ route('register') }}"
+                            class="inline-block bg-yellow-400 hover:bg-yellow-500 text-blue-900 text-2xl font-bold px-10 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition duration-300">
+                            انضم إلينا الآن
+                        </a>
+                    @endguest
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section class="bg-white py-20">
+                <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                    <!-- Text Content -->
+                    <div class="lg:order-1 text-center lg:text-right">
+                        <h2
+                            class="text-4xl font-extrabold text-blue-700 mb-6 border-r-4 border-yellow-400 pr-4 inline-block">
+                            عن المكتبة</h2>
+                        <p class="text-gray-700 text-lg leading-relaxed mb-8">
+                            تأسست <strong>LibraryEase</strong> عام <strong>2015</strong> فى قلب الرياض,
+                            بهدف تسهيل الوصول إلى المعرفة لجميع القراء عبر منصة رقمية حديثة.
+                            نقدم تجربة تصفح وحجز سهلة وسريعة، تجمع بين الراحة والتقنية الحديثة.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+                            <div class="p-4 bg-blue-50 rounded-xl shadow-sm">
+                                <div class="text-4xl mb-2">📍</div>
+                                <h3 class="text-lg font-bold text-blue-800">موقعنا</h3>
+                                <p class="text-gray-600 text-sm">الرياض, السعودية</p>
+                            </div>
+
+                            <div class="p-4 bg-blue-50 rounded-xl shadow-sm">
+                                <div class="text-4xl mb-2">📖</div>
+                                <h3 class="text-lg font-bold text-blue-800">المخزون</h3>
+                                <p class="text-gray-600 text-sm">آلاف الكتب المتاحة للحجز الفوري.</p>
+                            </div>
+
+                            <div class="p-4 bg-blue-50 rounded-xl shadow-sm">
+                                <div class="text-4xl mb-2">📅</div>
+                                <h3 class="text-lg font-bold text-blue-800">التأسيس</h3>
+                                <p class="text-gray-600 text-sm">منذ 2015</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="flex justify-center lg:justify-start lg:order-2">
+
+                        <img src="https://image.pollinations.ai/prompt/An%20abstract%20image%20representing%20reading%20and%20mind%20expansion.%20A%20person's%20silhouette%20is%20seen%20with%20gears%20and%20light%20radiating%20from%20their%20head,%20merging%20with%20open%20books%20and%20a%20dynamic,%20flowing%20network%20of%20information.%20The%20style%20is%20modern,%20fluid,%20and%20uses%20a%20palette%20of%20deep%20blues,%20purples,%20and%20bright%20yellows%20or%20golds%20to%20symbolize%20knowledge%20and%20creativity.%20Focus%20on%20flexibility%20and%20growth."
+                            alt="صورة تجريدية للقراءة وتوسع العقل" class="rounded-3xl shadow-2xl max-w-full h-auto" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="bg-blue-700 text-white py-20 text-center">
+                <div class="max-w-6xl mx-auto px-6">
+                    <h2 class="text-4xl font-extrabold mb-10 border-b-4 border-yellow-400 pb-2 inline-block">مميزات
+                        LibraryEase</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
+                        <div
+                            class="p-6 bg-blue-800 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300">
+                            <i class="fas fa-search text-5xl mb-4 text-yellow-400"></i>
+                            <h3 class="text-2xl font-bold mb-2">حجز فوري وسهل</h3>
+                            <p class="text-blue-100">احجز أي كتاب في ثوانٍ واستمتع بواجهة مستخدم بسيطة وسريعة.</p>
+                        </div>
+
+                        <div
+                            class="p-6 bg-blue-800 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300">
+                            <i class="fab fa-github text-5xl mb-4 text-yellow-400"></i>
+                            <h3 class="text-2xl font-bold mb-2">مصادقة متعددة</h3>
+                            <p class="text-blue-100">دعم تسجيل الدخول التقليدي وعبر منصات التواصل (مثل GitHub) لسرعة
+                                الوصول.</p>
+                        </div>
+
+                        <div
+                            class="p-6 bg-blue-800 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300">
+                            <i class="fas fa-handshake text-5xl mb-4 text-yellow-400"></i>
+                            <h3 class="text-2xl font-bold mb-2">إدارة احترافية</h3>
+                            <p class="text-blue-100">واجهة إدارة مخصصة للمديرين لمتابعة الكتب والمخزون والحجوزات بسهولة.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="py-16 bg-indigo-600 text-white text-center">
+                <div class="max-w-4xl mx-auto px-4">
+                    <h3 class="text-4xl font-bold mb-4">ابدأ رحلتك المعرفية الآن</h3>
+                    <p class="text-xl mb-8">تسجيل سريع، قراءة ممتعة.</p>
+                    @guest
+                        <a href="{{ route('register') }}"
+                            class="inline-block bg-white text-indigo-600 hover:bg-gray-100 font-bold text-lg px-8 py-3 rounded-lg shadow-2xl transition duration-300 transform hover:translate-y-0.5">
+                            إنشاء حساب مجاني
+                        </a>
+                    @endguest
+                </div>
+            </section>
         </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-gray-300 text-center py-6 border-t-4 border-yellow-400">
+            <p>© {{ date('Y') }} LibraryEase. جميع الحقوق محفوظة.</p>
+        </footer>
 
     </div>
 </body>

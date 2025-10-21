@@ -1,24 +1,26 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ReservationController;
 
-
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [BookController::class, 'dashIndex'])
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 
 Route::middleware(['auth'])
-    ->name('admin.')->group(function () {
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
         Route::view('/', 'admin.dashboard')->name('dashboard');
 
@@ -28,12 +30,14 @@ Route::middleware(['auth'])
 
         Route::get('reservations', [ReservationController::class, 'index'])->name('reservations.index');
         Route::patch('reservations/{reservation}/return', [ReservationController::class, 'markAsReturned'])->name('reservations.return');
+
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
     });
 
 
 
 Route::middleware('auth')->group(function () {
-
+    Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
     Route::post('books/{book}/reserve', [ReservationController::class, 'store'])->name('books.reserve');
     Route::get('my-reservations', [ReservationController::class, 'myReservations'])->name('reservations.my');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');

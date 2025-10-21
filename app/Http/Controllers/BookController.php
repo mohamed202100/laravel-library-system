@@ -16,6 +16,14 @@ class BookController extends Controller
 
         return view('admin.books.index', compact('books'));
     }
+    public function dashIndex()
+    {
+        $books = Book::where('available_copies', '>', 0)
+            ->with('author')
+            ->paginate(8);
+
+        return view('dashboard', compact('books'));
+    }
 
     public function create()
     {
@@ -37,6 +45,13 @@ class BookController extends Controller
 
         return redirect()->route('admin.books.index')
             ->with('success', 'تم إضافة الكتاب والمخزون بنجاح.');
+    }
+
+    public function show(Book $book)
+    {
+        $book->load('author');
+
+        return view('admin.books.show', compact('book'));
     }
 
     public function edit(Book $book)

@@ -1,19 +1,32 @@
 <?php
-use Carbon\Carbon;
+// يتم تمرير متغير $reservations إلى هذا الـ View
 ?>
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('متابعة الحجوزات والإعارات') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('سجل حجوزاتي') }}
+            </h2>
+            {{-- ✅ زر العودة للخلف --}}
+            <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-150 text-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                العودة لتصفح المكتبة
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('جميع سجلات الإعارة (الحجوزات)') }}</h3>
 
+                    <h3 class="text-xl font-medium mb-4">{{ __('الحجوزات الحالية والسابقة') }}</h3>
+
+                    {{-- مكان لعرض رسائل الأخطاء أو النجاح --}}
                     @if (session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                             role="alert">
@@ -27,6 +40,7 @@ use Carbon\Carbon;
                         </div>
                     @endif
 
+                    {{-- جدول عرض الحجوزات --}}
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -36,13 +50,13 @@ use Carbon\Carbon;
                                         {{ __('الكتاب') }}</th>
                                     <th
                                         class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('المستعير') }}</th>
+                                        {{ __('المؤلف') }}</th>
                                     <th
                                         class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('تاريخ الاستعارة') }}</th>
                                     <th
                                         class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('تاريخ الاستحقاق') }}</th>
+                                        {{ __('تاريخ الإرجاع المتوقع') }}</th>
                                     <th
                                         class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('الحالة') }}</th>
@@ -53,31 +67,21 @@ use Carbon\Carbon;
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($reservations as $reservation)
-                                    <?php
-                                    $is_overdue = $reservation->status == 'borrowed' && Carbon::parse($reservation->return_date)->isPast();
-                                    ?>
-                                    <tr class="{{ $is_overdue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50' }}">
+                                    <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             <a href="{{ route('books.show', $reservation->book->id) }}"
                                                 class="text-indigo-600 hover:text-indigo-800 font-bold">
                                                 {{ $reservation->book->title }}
                                             </a>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                {{ $reservation->book->author->name }}</p>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $reservation->user->name }}
+                                            {{ $reservation->book->author->name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $reservation->borrow_date }}
                                         </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ $is_overdue ? 'text-red-600' : 'text-gray-700' }}">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             {{ $reservation->return_date }}
-                                            @if ($is_overdue)
-                                                <span
-                                                    class="block text-xs font-normal text-red-500">({{ __('متأخر') }})</span>
-                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-xs font-semibold">
                                             @if ($reservation->status == 'borrowed')
@@ -90,32 +94,30 @@ use Carbon\Carbon;
                                                     class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                     {{ __('تم الإرجاع') }}
                                                 </span>
-                                                <p class="text-xs text-gray-500 mt-1">
-                                                    {{ Carbon::parse($reservation->returned_at)->toDateString() }}</p>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                             @if ($reservation->status == 'borrowed')
-                                                <form action="{{ route('admin.reservations.return', $reservation) }}"
+                                                <form action="{{ route('reservations.destroy', $reservation) }}"
                                                     method="POST" class="inline">
                                                     @csrf
-                                                    @method('PATCH')
+                                                    @method('DELETE')
                                                     <button type="submit"
-                                                        class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg text-xs font-bold transition duration-150 shadow-md"
-                                                        onclick="return confirm('{{ __('هل أنت متأكد من تسجيل إرجاع هذا الكتاب؟') }}')">
-                                                        {{ __('تسجيل الإرجاع') }}
+                                                        class="text-red-600 hover:text-red-900 text-xs font-bold"
+                                                        onclick="return confirm('{{ __('هل أنت متأكد من إلغاء هذا الحجز؟') }}')">
+                                                        {{ __('إلغاء الحجز') }}
                                                     </button>
                                                 </form>
                                             @else
-                                                <span class="text-gray-400 text-xs">{{ __('مكتمل') }}</span>
+                                                <span class="text-gray-400 text-xs">{{ __('لا يوجد إجراء') }}</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7"
+                                        <td colspan="6"
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                            {{ __('لا توجد سجلات إعارة مسجلة حالياً.') }}
+                                            {{ __('لا توجد حجوزات مسجلة حالياً.') }}
                                         </td>
                                     </tr>
                                 @endforelse
