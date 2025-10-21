@@ -1,0 +1,41 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('إضافة مؤلف جديد') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white p-6 shadow-sm sm:rounded-lg">
+
+                <form method="POST" action="{{ route('admin.authors.store') }}">
+                    @csrf
+
+                    {{-- حقل الاسم --}}
+                    <div class="mb-4">
+                        <x-input-label for="name" :value="__('اسم المؤلف')" />
+                        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full"
+                            :value="old('name')" required autofocus />
+                        <x-input-error class="mt-2" :messages="$errors->get('name')" />
+                    </div>
+
+                    {{-- حقل السيرة الذاتية --}}
+                    <div class="mb-6">
+                        <x-input-label for="bio" :value="__('السيرة الذاتية (اختياري)')" />
+                        <textarea id="bio" name="bio" rows="4"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('bio') }}</textarea>
+                        <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+                    </div>
+
+                    <div class="flex justify-end">
+                        <x-primary-button>
+                            {{ __('حفظ المؤلف') }}
+                        </x-primary-button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</x-app-layout>
