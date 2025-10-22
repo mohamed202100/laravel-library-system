@@ -41,13 +41,10 @@
 
                             @auth
                                 @if ($book->available_copies > 0)
-                                    <form action="{{ route('books.reserve', $book) }}" method="POST">
-                                        @csrf
-                                        <button type="submit"
-                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-base transition duration-200 shadow-md">
-                                            {{ __('احجز الآن') }}
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('reservations.create', $book) }}"
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow transition">
+                                        {{ __('احجز الآن') }}
+                                    </a>
                                 @else
                                     <button disabled
                                         class="w-full bg-gray-400 text-white font-bold py-2 px-4 rounded-lg cursor-not-allowed">

@@ -1,142 +1,67 @@
-<?php
-// يتم تمرير متغير $reservations إلى هذا الـ View
-?>
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('سجل حجوزاتي') }}
-            </h2>
-            {{-- ✅ زر العودة للخلف --}}
-            <a href="{{ route('dashboard') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-150 text-sm flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-4 h-4 mr-1">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                </svg>
-                العودة لتصفح المكتبة
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            📖 حجوزاتي
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+    <div class="py-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            @if (session('success'))
+                <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-lg">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                    <h3 class="text-xl font-medium mb-4">{{ __('الحجوزات الحالية والسابقة') }}</h3>
+            @if ($reservations->isEmpty())
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-center text-gray-500">
+                    لا توجد حجوزات حالياً 📚
+                </div>
+            @else
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6 space-y-4">
+                    @foreach ($reservations as $reservation)
+                        <div class="border-b pb-4 flex flex-col md:flex-row md:items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                    {{ $reservation->book->title }}
+                                </h3>
+                                <p class="text-gray-600">✍️ {{ $reservation->book->author->name ?? 'غير معروف' }}</p>
+                                <p class="text-gray-500">📅 تاريخ الإرجاع: {{ $reservation->return_date }}</p>
+                                <p class="text-gray-500">
+                                    📦 الحالة:
+                                    <span
+                                        class="font-semibold {{ $reservation->status === 'borrowed' ? 'text-blue-600' : 'text-green-600' }}">
+                                        {{ $reservation->status === 'borrowed' ? 'قيد الإعارة' : 'تم الإرجاع' }}
+                                    </span>
+                                </p>
+                            </div>
 
-                    {{-- مكان لعرض رسائل الأخطاء أو النجاح --}}
-                    @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                            role="alert">
-                            {{ session('success') }}
+                            @if ($reservation->status === 'returned')
+                                <form action="{{ route('reservations.rate', $reservation->id) }}" method="POST"
+                                    class="mt-3 md:mt-0">
+                                    @csrf
+                                    <label for="rating" class="text-sm text-gray-700">قيّم الكتاب:</label>
+                                    <select name="rating" id="rating"
+                                        class="border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-indigo-500"
+                                        onchange="this.form.submit()">
+                                        <option value="">اختر ⭐</option>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <option value="{{ $i }}"
+                                                {{ $reservation->rating == $i ? 'selected' : '' }}>{{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </form>
+                            @endif
+
                         </div>
-                    @endif
-                    @if (session('error'))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-                            role="alert">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+                    @endforeach
 
-                    {{-- جدول عرض الحجوزات --}}
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('الكتاب') }}</th>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('المؤلف') }}</th>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('تاريخ الاستعارة') }}</th>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('تاريخ الإرجاع المتوقع') }}</th>
-                                    <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('الحالة') }}</th>
-                                    <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('الإجراءات') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse ($reservations as $reservation)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            <a href="{{ route('books.show', $reservation->book->id) }}"
-                                                class="text-indigo-600 hover:text-indigo-800 font-bold">
-                                                {{ $reservation->book->title }}
-                                            </a>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $reservation->book->author->name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $reservation->borrow_date }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            {{ $reservation->return_date }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center text-xs font-semibold">
-                                            @if ($reservation->status == 'borrowed')
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                    {{ __('مستعار') }}
-                                                </span>
-                                            @elseif ($reservation->status == 'returned')
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    {{ __('تم الإرجاع') }}
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                            @if ($reservation->status == 'borrowed')
-                                                <form action="{{ route('reservations.destroy', $reservation) }}"
-                                                    method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="text-red-600 hover:text-red-900 text-xs font-bold"
-                                                        onclick="return confirm('{{ __('هل أنت متأكد من إلغاء هذا الحجز؟') }}')">
-                                                        {{ __('إلغاء الحجز') }}
-                                                    </button>
-                                                </form>
-                                                @if (!$reservation->is_paid)
-                                                    <a href="{{ route('payment.checkout', $reservation) }}"
-                                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-bold">
-                                                        ادفع الآن
-                                                    </a>
-                                                @endif
-                                            @else
-                                                <span class="text-gray-400 text-xs">{{ __('لا يوجد إجراء') }}</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6"
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                            {{ __('لا توجد حجوزات مسجلة حالياً.') }}
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-4">
+                    <div class="mt-6">
                         {{ $reservations->links() }}
                     </div>
-
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

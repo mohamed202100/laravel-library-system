@@ -106,6 +106,7 @@ class BookController extends Controller
         $books = Book::with('author')
             ->when($query, fn($q) => $q->where('title', 'like', "%{$query}%")
                 ->orWhereHas('author', fn($q2) => $q2->where('name', 'like', "%{$query}%")))
+            ->orderByRaw('available_copies = 0, title ASC')
             ->paginate(10);
 
         if ($request->ajax()) {

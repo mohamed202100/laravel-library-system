@@ -34,11 +34,10 @@
                     <td class="px-6 py-4 text-gray-600">{{ number_format($book->price, 2) }} {{ __('ر.س') }}</td>
                     <td class="px-6 py-4">
                         @if ($book->available_copies > 0)
-                            <form action="{{ route('books.reserve', $book) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow transition">{{ __('احجز الآن') }}</button>
-                            </form>
+                            <a href="{{ route('reservations.create', $book) }}"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow transition">
+                                {{ __('احجز الآن') }}
+                            </a>
                         @else
                             <span class="text-red-600 font-semibold text-sm">{{ __('غير متاح') }}</span>
                         @endif

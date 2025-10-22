@@ -205,6 +205,77 @@ use Illuminate\Support\Facades\Route;
             </section>
         </main>
 
+        <!-- Contact Section -->
+        <section class="bg-gray-100 py-16">
+            <div class="max-w-6xl mx-auto px-6 text-center">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-6 border-b-4 border-yellow-400 inline-block pb-2">
+                    تواصل معنا</h2>
+                <p class="text-gray-600 mb-10">هل لديك أي استفسار أو اقتراح؟ نحن هنا لمساعدتك.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition duration-300">
+                        <i class="fas fa-map-marker-alt text-3xl text-yellow-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">موقعنا</h3>
+                        <p class="text-gray-600">الرياض، المملكة العربية السعودية</p>
+                    </div>
+
+                    <div class="p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition duration-300">
+                        <i class="fas fa-envelope text-3xl text-yellow-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">البريد الإلكتروني</h3>
+                        <p class="text-gray-600">support@libraryease.com</p>
+                    </div>
+
+                    <div class="p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition duration-300">
+                        <i class="fas fa-phone-alt text-3xl text-yellow-400 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">الهاتف</h3>
+                        <p class="text-gray-600">+966 555 123 456</p>
+                    </div>
+                </div>
+
+                <form action="#" method="POST" class="mt-12 max-w-2xl mx-auto text-left">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 font-semibold mb-2">الاسم</label>
+                        <input type="text" id="name" name="name" required
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 font-semibold mb-2">البريد الإلكتروني</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
+                    </div>
+                    <div class="mb-4">
+                        <label for="message" class="block text-gray-700 font-semibold mb-2">الرسالة</label>
+                        <textarea id="message" name="message" rows="5" required
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold px-6 py-3 rounded-lg shadow-lg transition duration-300">
+                        إرسال الرسالة
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Social Links -->
+        <div class="mt-12 flex justify-center space-x-6 space-x-reverse">
+            <a href="https://facebook.com/LibraryEase" target="_blank"
+                class="text-blue-600 hover:text-blue-800 text-3xl transition duration-300">
+                <i class="fab fa-facebook-square"></i>
+            </a>
+
+            <a href="https://twitter.com/LibraryEase" target="_blank"
+                class="text-sky-500 hover:text-sky-700 text-3xl transition duration-300">
+                <i class="fab fa-twitter-square"></i>
+            </a>
+
+            <a href="https://instagram.com/LibraryEase" target="_blank"
+                class="text-pink-500 hover:text-pink-700 text-3xl transition duration-300">
+                <i class="fab fa-instagram-square"></i>
+            </a>
+        </div>
+
+
+
         <!-- Footer -->
         <footer class="bg-gray-900 text-gray-300 text-center py-6 border-t-4 border-yellow-400">
             <p>© {{ date('Y') }} LibraryEase. جميع الحقوق محفوظة.</p>

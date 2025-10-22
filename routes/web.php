@@ -46,9 +46,14 @@ Route::middleware(['auth', 'admin', 'verified'])
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
-    Route::post('books/{book}/reserve', [ReservationController::class, 'store'])->name('books.reserve');
+
+    Route::get('/reservations/create/{book}', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/reservations/{book}', [ReservationController::class, 'store'])->name('reservations.store');
     Route::get('my-reservations', [ReservationController::class, 'myReservations'])->name('reservations.my');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+    Route::post('/reservations/{reservation}/rate', [ReservationController::class, 'rate'])
+        ->name('reservations.rate');
 
 
 
