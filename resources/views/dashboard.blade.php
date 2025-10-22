@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-
             <p class="text-sm text-gray-500">{{ __('اكتشف، اقرأ، واستمتع بعالم المعرفة!') }}</p>
         </div>
     </x-slot>
@@ -27,15 +26,15 @@
                             class="flex-1 text-center bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold py-3 px-4 rounded-lg shadow-lg transition">
                             📖 {{ __('مشاهدة حجوزاتي') }}
                         </a>
-                        <a href="{{ route('dashboard') }}"
-                            class="flex-1 text-center bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition">
-                            🔍 {{ __('تصفح الكتب') }}
-                        </a>
+                        <form id="search-form" class="flex flex-1 gap-2">
+                            <input type="text" name="search" placeholder="ابحث عن كتاب أو مؤلف..." id="search"
+                                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-black">
+                        </form>
+
                     </div>
                 </div>
             </div>
 
-            {{-- 🔹 قائمة الكتب --}}
             <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
                 <div class="p-6">
 
@@ -43,7 +42,6 @@
                         <i class="fa-solid fa-book text-indigo-600"></i> {{ __('الكتب المتاحة للحجز') }}
                     </h3>
 
-                    {{-- تنبيهات --}}
                     @if (session('status'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                             {{ session('status') }}
@@ -55,8 +53,7 @@
                         </div>
                     @endif
 
-                    {{-- جدول الكتب --}}
-                    <div class="overflow-x-auto">
+                    <div id="books-table" class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 text-center">
                             <thead class="bg-indigo-50">
                                 <tr>
@@ -74,10 +71,9 @@
                                         {{ __('الإجراءات') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
+                            <tbody id="books-body" class="bg-white divide-y divide-gray-100">
                                 @forelse ($books as $book)
                                     <tr class="hover:bg-gray-50 transition">
-                                        {{-- الغلاف --}}
                                         <td class="px-6 py-4">
                                             @if ($book->cover_image)
                                                 <img src="{{ asset('storage/' . $book->cover_image) }}"
@@ -90,30 +86,20 @@
                                                 </div>
                                             @endif
                                         </td>
-
-                                        {{-- العنوان --}}
                                         <td class="px-6 py-4 font-bold text-indigo-700">
                                             <a href="{{ route('books.show', $book) }}"
-                                                class="hover:underline hover:text-indigo-900">{{ $book->title }}</a>
+                                                class="hover:underline hover:text-indigo-900">
+                                                {{ $book->title }}
+                                            </a>
                                         </td>
-
-                                        {{-- المؤلف --}}
                                         <td class="px-6 py-4 text-gray-700">
-                                            {{ $book->author->name ?? __('غير معروف') }}
-                                        </td>
-
-                                        {{-- المتوفر --}}
+                                            {{ $book->author->name ?? __('غير معروف') }}</td>
                                         <td
                                             class="px-6 py-4 font-semibold {{ $book->available_copies > 0 ? 'text-green-600' : 'text-red-500' }}">
                                             {{ $book->available_copies }}
                                         </td>
-
-                                        {{-- السعر --}}
-                                        <td class="px-6 py-4 text-gray-600">
-                                            {{ number_format($book->price, 2) }} {{ __('ر.س') }}
-                                        </td>
-
-                                        {{-- الحجز --}}
+                                        <td class="px-6 py-4 text-gray-600">{{ number_format($book->price, 2) }}
+                                            {{ __('ر.س') }}</td>
                                         <td class="px-6 py-4">
                                             @if ($book->available_copies > 0)
                                                 <form action="{{ route('books.reserve', $book) }}" method="POST"
@@ -139,15 +125,33 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
 
-                    {{-- ترقيم الصفحات --}}
-                    <div class="mt-6">
-                        {{ $books->links() }}
+                        <div class="mt-6">
+                            {{ $books->links() }}
+                        </div>
                     </div>
-
                 </div>
             </div>
+
         </div>
     </div>
 </x-app-layout>
+<script>
+    const searchInput = document.querySelector('#search');
+    const searchForm = document.querySelector('#search-form');
+    const booksTable = document.querySelector('#books-table');
+
+    searchInput.addEventListener('keyup', function() {
+        const query = this.value;
+
+        fetch('{{ route('books.search') }}?search=' + query, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                booksTable.innerHTML = html;
+            });
+    });
+</script>

@@ -22,6 +22,8 @@ Route::get('/dashboard', [BookController::class, 'dashIndex'])
     ->middleware(['auth'])
     ->name('dashboard');
 
+Route::get('/books/search', [BookController::class, 'search'])->name('books.search');
+
 
 Route::middleware(['auth', 'admin', 'verified'])
     ->prefix('admin')
@@ -47,6 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('books/{book}/reserve', [ReservationController::class, 'store'])->name('books.reserve');
     Route::get('my-reservations', [ReservationController::class, 'myReservations'])->name('reservations.my');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+
 
     Route::get('/checkout/{reservation}', [PaymentController::class, 'checkout'])
         ->name('payment.checkout');

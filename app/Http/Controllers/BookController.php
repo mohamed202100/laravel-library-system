@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Author;
+use Illuminate\Http\Request;
 use App\Http\Requests\Admin\BookStoreRequest;
 use App\Http\Requests\Admin\BookUpdateRequest;
 use Illuminate\Support\Facades\Storage;
@@ -12,14 +13,17 @@ class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::with('author')->paginate(10);
+        $books = Book::with('author')
+            ->orderByRaw('available_copies = 0, title ASC')
+            ->paginate(10);
 
         return view('admin.books.index', compact('books'));
     }
+
     public function dashIndex()
     {
-        $books = Book::where('available_copies', '>', 0)
-            ->with('author')
+        $books = Book::with('author')
+            ->orderByRaw('available_copies = 0, title ASC')
             ->paginate(8);
 
         return view('dashboard', compact('books'));
@@ -93,5 +97,21 @@ class BookController extends Controller
             return redirect()->route('admin.books.index')
                 ->with('error', 'فشل حذف الكتاب. تأكد من عدم وجود حجوزات نشطة مرتبطة به.');
         }
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->search;
+
+        $books = Book::with('author')
+            ->when($query, fn($q) => $q->where('title', 'like', "%{$query}%")
+                ->orWhereHas('author', fn($q2) => $q2->where('name', 'like', "%{$query}%")))
+            ->paginate(10);
+
+        if ($request->ajax()) {
+            return view('admin.books.books_table', compact('books'))->render();
+        }
+
+        return view('dashboard', compact('books', 'query'));
     }
 }
